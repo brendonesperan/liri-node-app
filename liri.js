@@ -12,38 +12,41 @@ var fs = require("fs");
 // replaces above code
 var spotify = new Spotify(keys.spotify);
    
-
 var nodeArgs = process.argv;
-
 var command = process.argv[2];
+
+var movieName = "mr+nobody";
+var queryUrl = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy";
+
+
 
 switch(command) {
     case "concert-this":
-    // stuff
+    concertThis();
     break;
 
     case "spotify-this-song":
-    // stuff
+    spotifyThisSong();
     break;
 
     case "movie-this":
-    // stuff
+    movieThis();
     break;
 
     case "do-what-it-says":
-    // stuff;
+    doWhatItSays();
     break;
 }
 
 // concert-this
-function concert() {
+function concertThis() {
 
 }
 
 
 
 // spotify-this-song
-function spotifySong() {
+function spotifyThisSong() {
     spotify
         .search(
             { type: 'track', query: 'The Sign' }, function (err, data) {
@@ -58,10 +61,32 @@ function spotifySong() {
 
 
 // movie-this
+function movieThis() {
+    request(queryUrl, function(error, response, body) {
+
+        // If the request is successful
+        if (!error && response.statusCode === 200) {
+      
+          // Parse the body of the site and recover just the imdbRating
+          // (Note: The syntax below for parsing isn't obvious. Just spend a few moments dissecting it).
+          console.log("Release Year: " + JSON.parse(body).Year);
+
+          console.log(` * ${body.Title}
+          * ${body.Year}
+          * ${body.imdbRating}
+          * ${body.Ratings[1]}
+          * ${body.Country}
+          * ${body.Language}
+          * ${body.Plot}
+          * ${body.Actors}`);
+        }
+      });
+      
+}
 
 
 
 // do-what-it-says
+function doWhatItSays() {
 
-
-
+}
