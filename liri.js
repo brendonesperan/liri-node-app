@@ -53,7 +53,6 @@ function spotifyThisSong() {
                 if (err) {
                     return console.log('Error occurred: ' + err);
                 }
-
                 console.log(data);
             });
 }
@@ -88,5 +87,17 @@ function movieThis() {
 
 // do-what-it-says
 function doWhatItSays() {
+    fs.readFile("random.txt", "utf8", function(error, data) {
+        // If the code experiences any errors it will log the error to the console.
+        if (error) {
+          return console.log(error);
+        }
+        // Then split it by commas (to make it more readable)
+        var randomArr = data.split(",");
 
+        // set global var "command" equal to randomArr[0]
+        // run switch statement using new randomArr[0] command
+        // call correct method using name data from randomArr[1]
+    });
 }
+
