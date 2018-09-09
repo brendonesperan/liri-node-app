@@ -69,6 +69,18 @@ function spotifyThisSong() {
                     return console.log('Error occurred: ' + err);
                 }
                 console.log(data);
+                spotify.search({ type: 'track', query: song, limit: 1 }, function (err, data) {
+                    if (err) {
+                        return console.log('Error occurred: ' + err);
+                    } else {
+                        console.log(`
+Artist(s):      ${data.items[0].album.artists[0].name}
+Song:           ${data.items[0].name}
+Preview:        ${data.items[0].preview_url}
+Album:          ${data.items[0].album.name}
+`);
+                    }
+                
             });
 }
 
@@ -121,4 +133,3 @@ function doWhatItSays() {
         // call correct method using name data from randomArr[1]
     });
 }
-
