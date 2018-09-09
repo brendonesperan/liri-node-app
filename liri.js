@@ -2,7 +2,7 @@ var request = require("request");
 var moment = require("moment");
 var dontenv = require("dotenv").config();
 var Spotify = require("node-spotify-api");
-var keys = require("keys.js");
+var keys = require("./keys.js");
 var fs = require("fs");
 
 // var spotify = new Spotify({
@@ -15,10 +15,10 @@ var spotify = new Spotify(keys.spotify);
 
 
 // var nodeArgs = process.argv;
-// var command = process.argv[2];
+var command = process.argv[2];
 var inputName = process.argv.slice(3).join("-");
 
-var textCommand = "";
+// var textCommand = "";
 // var textName = "";
 
 // var movieName = "mr+nobody";
@@ -31,6 +31,7 @@ var timeFormat = "MM/DD/YYYY";
 
 
 function commandReader(command) {
+    // console.log("Reached 0");
     switch(command) {
         case "concert-this":
         concertThis(inputName);
@@ -57,13 +58,19 @@ function commandReader(command) {
 
 // concert-this
 function concertThis(band) {
+    // console.log("Reached 1");
     request("https://rest.bandsintown.com/artists/" + band + "/events?app_id=codingbootcamp", function(error, response, body) {
         if (!error && response.statusCode === 200) {
-            var bodyInfo = JSON.parse(body);
+            // console.log(body);
+            // var bodyInfo = JSON.parse(body);
+            // var date = bodyInfo[0].datetime.slice(0,10).toString();
+            // var m = moment(date, timeFormat);
+            console.log("Preslice: " + date);
+            console.log("Moment: " + m);
             console.log("For artist: " + band);
             console.log("Venue: " + bodyInfo[0].venue.name);
             console.log("Location: " + bodyInfo[0].venue.city);
-            console.log("Date: " + moment(bodyInfo[0].datetime, timeFormat));
+            console.log("Date: " + moment(bodyInfo[0].datetime).format(timeFormat));
         }
     })    
 }
@@ -72,8 +79,9 @@ function concertThis(band) {
 
 // spotify-this-song
 function spotifyThisSong(song) {
+    // console.log("Reached 2");
     if (!song) {
-        song = "The Sign";
+        song = "The Sign Ace of Base";
     }
     spotify
         .search({ type: "track", query: song, limit: 1 }, function (err, data) {
@@ -81,12 +89,13 @@ function spotifyThisSong(song) {
                 return console.log("Error occurred: " + err);
             }
             else {
+                // console.log(data);
                 console.log(`
-Artist(s):      ${data.items[0].album.artists[0].name}
-Song:           ${data.items[0].name}
-Preview:        ${data.items[0].preview_url}
-Album:          ${data.items[0].album.name}
-`);
+Artist(s):      ${data.tracks.items[0].album.artists[0].name}
+Song:           ${data.tracks.items[0].name}
+Preview:        ${data.tracks.items[0].preview_url}
+Album:          ${data.tracks.items[0].album.name}
+                `);
                 
             }
         })
@@ -96,6 +105,7 @@ Album:          ${data.items[0].album.name}
 
 // movie-this
 function movieThis(movie) {
+    // console.log("Reached 3");
     if (!movie) {
         movie = "mr+nobody";
     }
@@ -110,14 +120,17 @@ function movieThis(movie) {
 
           bodyInfo = JSON.parse(body);
 
-          console.log(` * ${bodyInfo.Title}
-          * ${bodyInfo.Year}
-          * ${bodyInfo.imdbRating}
-          * ${bodyInfo.Ratings[1]}
-          * ${bodyInfo.Country}
-          * ${bodyInfo.Language}
-          * ${bodyInfo.Plot}
-          * ${bodyInfo.Actors}`);
+          console.log(`
+Title:                  ${bodyInfo.Title}
+Year:                   ${bodyInfo.Year}
+IMDB Rating:            ${bodyInfo.imdbRating}
+Rotten Tomatoes Rating: ${bodyInfo.Rotten_Tomatoes}
+Country:                ${bodyInfo.Country}
+Language:               ${bodyInfo.Language}
+Plot:
+${bodyInfo.Plot}
+Actors:                 ${bodyInfo.Actors}
+        `);
         }
       });
       
@@ -127,6 +140,7 @@ function movieThis(movie) {
 
 // do-what-it-says
 function doWhatItSays() {
+    // console.log("Reached 4");
     fs.readFile("random.txt", "utf8", function(error, data) {
         // If the code experiences any errors it will log the error to the console.
         if (error) {
@@ -135,7 +149,7 @@ function doWhatItSays() {
         // Then split it by commas (to make it more readable)
         var randomArr = data.split(",");
         
-        textCommand = randomArr[0];
+        var textCommand = randomArr[0];
         inputName = randomArr[1];
 
         commandReader(textCommand);
@@ -145,3 +159,8 @@ function doWhatItSays() {
         // call correct method using name data from randomArr[1]
     });
 }
+
+
+
+// now run the program
+commandReader(command);
