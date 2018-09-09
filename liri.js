@@ -12,13 +12,20 @@ var fs = require("fs");
 // replaces above code
 var spotify = new Spotify(keys.spotify);
    
+
+
 var nodeArgs = process.argv;
 var command = process.argv[2];
 
+var textCommand = "";
+var textName = "";
+
 var movieName = "mr+nobody";
-var queryUrl = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy";
+var movieUrl = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy";
 
-
+var bandName;
+var bandUrl = "https://rest.bandsintown.com/artists/" + bandName + "/events?app_id=codingbootcamp";
+var timeFormat = "MM/DD/YYYY";
 
 switch(command) {
     case "concert-this":
@@ -40,7 +47,15 @@ switch(command) {
 
 // concert-this
 function concertThis() {
-
+    request(bandUrl, function(error, response, body) {
+        if (!error && response.statusCode === 200) {
+            var bodyInfo = JSON.parse(body);
+            console.log("For artist: " + bandName);
+            console.log("Venue: " + bodyInfo[0].venue.name);
+            console.log("Location: " + bodyInfo[0].venue.city);
+            console.log("Date: " + moment(bodyInfo[0].datetime, timeFormat));
+        }
+    })    
 }
 
 
@@ -61,7 +76,7 @@ function spotifyThisSong() {
 
 // movie-this
 function movieThis() {
-    request(queryUrl, function(error, response, body) {
+    request(movieUrl, function(error, response, body) {
 
         // If the request is successful
         if (!error && response.statusCode === 200) {
@@ -70,14 +85,16 @@ function movieThis() {
           // (Note: The syntax below for parsing isn't obvious. Just spend a few moments dissecting it).
           console.log("Release Year: " + JSON.parse(body).Year);
 
-          console.log(` * ${body.Title}
-          * ${body.Year}
-          * ${body.imdbRating}
-          * ${body.Ratings[1]}
-          * ${body.Country}
-          * ${body.Language}
-          * ${body.Plot}
-          * ${body.Actors}`);
+          bodyInfo = JSON.parse(body);
+
+          console.log(` * ${bodyInfo.Title}
+          * ${bodyInfo.Year}
+          * ${bodyInfo.imdbRating}
+          * ${bodyInfo.Ratings[1]}
+          * ${bodyInfo.Country}
+          * ${bodyInfo.Language}
+          * ${bodyInfo.Plot}
+          * ${bodyInfo.Actors}`);
         }
       });
       
@@ -94,6 +111,10 @@ function doWhatItSays() {
         }
         // Then split it by commas (to make it more readable)
         var randomArr = data.split(",");
+        
+        textCommand = randomArr[0];
+        textName = randomArr[1];
+
 
         // set global var "command" equal to randomArr[0]
         // run switch statement using new randomArr[0] command
